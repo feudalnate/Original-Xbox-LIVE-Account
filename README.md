@@ -46,7 +46,7 @@ You could potentially create an account that is completely null (all zeroes) and
 | XUID | 0x0 | 0x8 | uint64 | Unique identifier for the account |
 | Reserved | 0x8 | 0x4 | uint32 | Unknown. XOnline expects this to be zero, verification fails if it's non-zero |
 | Gamertag | 0xC | 0x10 | char[] | Account gamertag. 15 ASCII characters + 1 null terminator. XOnline expects null-term, validation fails if it's not |
-| Flags | 0x1C | 0x4 | BitFlags | If bit 7 is set then passcode is enabled. The rest are unknown/unused. Bits 28/29/30/31 are reserved and validation fails if they're set |
+| Flags | 0x1C | 0x4 | BitFlags | If bit 0 is set then passcode is enabled. The rest are unknown/unused. Bits 28/29/30/31 are reserved and validation fails if they're set |
 | Passcode | 0x20 | 0x4 | byte[] | 4 bytes representing a 4 button combination required to access the account. 1 button stored in each byte (see the table below for the button values) |
 | Kerberos Domain | 0x24 | 0x14 | char[] | Server for account and content authentication. Used to login and everything else to do with the Xbox LIVE service. 19 ASCII characters + 1 null terminator. XOnline expects null-term, validation fails if it's not |
 | Kerberos Realm | 0x38 | 0x18 | char[] | Same as above. 23 ASCII characters + 1 null terminator. XOnline expects null-term, validation fails if it's not |
