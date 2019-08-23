@@ -71,7 +71,7 @@ You could potentially create an account that is completely null (all zeroes) and
 
 #### Creating a Xbox LIVE account for the *original* Xbox
 
-Begin by downloading the Xbox Account Manager tool (in this repository) and connecting a FATX formatted harddrive or memory card to your computer. Open the Xbox Account Manager and you will be presented with this
+Begin by downloading the [Xbox Account Manager](https://github.com/feudalnate/Original-Xbox-LIVE-Account/blob/master/XboxAccountManager/bin/Release/XboxAccountManager.exe) tool (in this repository) and connecting a FATX formatted harddrive or memory card to your computer. Open the Xbox Account Manager and you will be presented with this
 
 ![](https://i.imgur.com/d1yh0UP.png)
 
