@@ -10,7 +10,7 @@ Account data is stored in the first 1-2 sectors on a harddrive or memory card, w
 
 | Name | Offset | Length | Type | Comment |
 | - | - | - | - | - |
-| Magic | 0x0 | 0x4 | uint32 | Magic value to identify the device volume type. 4 ASCII characters "FATX" or 0x46415458 uint32 |
+| Magic | 0x0 | 0x4 | uint32 | Magic value to identify the device volume type. 4 ASCII characters "FATX" or 0x58544146 uint32 |
 | Volume ID | 0x4 | 0x4 | uint32 | Unique identifier for the volume. This is a randomly generated value and is used to differentiate between the potentially various mounted volumes on the Xbox |
 | Cluster Size | 0x8 | 0x4 | uint32 | Cluster size in 0x200 byte sectors (Cluster Size = 0x200 x value). This value is unused, cluster size is hardcoded as 32 sectors on harddrives (0x200 x 32 = 0x4000) and 16 sectors on memory cards (0x200 x 16 = 0x2000). Value is always 4 |
 | Number of active FAT's | 0xC | 0x4 | uint32 | Number of File Allocation Tables in use. Value is always 1 |
