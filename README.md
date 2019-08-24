@@ -75,7 +75,7 @@ Begin by downloading the [Xbox Account Manager](https://github.com/feudalnate/Or
 
 ![](https://i.imgur.com/d1yh0UP.png)
 
-You may change any value you would like, however the **XUID** must be valid hexidecimal and 16 characters in length and the **Gamertag** must be at least 1 character in length. After making your changes, go into the **File** menu, select **Save**, and then select **Device..**
+You may change any value you would like, however the **XUID** must be valid hexadecimal and 16 characters in length and the **Gamertag** must be at least 1 character in length. After making your changes, go into the **File** menu, select **Save**, and then select **Device..**
 
 ![](https://i.imgur.com/9ShzIAO.png)
 
