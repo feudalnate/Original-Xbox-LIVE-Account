@@ -1,14 +1,30 @@
-﻿using API;
-using Microsoft.Win32.SafeHandles;
+﻿using Microsoft.Win32.SafeHandles;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 namespace AccountManager
 {
 
-    public class Drive : IDisposable
+    public interface IDrive
+    {
+        //easier to do an interface to work in the device image support without redoing a bunch of stuff
+        string Name { get; }
+        string Path { get; }
+        ulong Capacity { get; }
+        bool IsOpen { get; }
+        void Dispose();
+        bool IsFATX { get; }
+        bool IsMemoryCard { get; }
+        int CurrentAccounts { get; }
+        int MaxAccounts { get; }
+        string FriendlyCapacity { get; }
+        bool ReadAccount(int index, out API.XOnline.ONLINE_USER_ACCOUNT_STRUCT account);
+        bool WriteAccount(int index, API.XOnline.ONLINE_USER_ACCOUNT_STRUCT account);
+        bool DeleteAccount(int index);
+    }
+
+    public class Drive : IDisposable, IDrive
     {
         private bool disposed; //want to avoid calling CloseHandle multiple times on accident (interop calls are expensive)
         private SafeFileHandle handle;
@@ -17,14 +33,17 @@ namespace AccountManager
         /// Device name
         /// </summary>
         public string Name { private set; get; }
+
         /// <summary>
         /// OS mounted path
         /// </summary>
         public string Path { private set; get; }
+
         /// <summary>
         /// Usable space on the device in bytes
         /// </summary>
         public ulong Capacity { private set; get; }
+
         /// <summary>
         /// Whether the device handle is open
         /// </summary>
@@ -325,6 +344,194 @@ namespace AccountManager
             [DllImport("kernel32.dll", SetLastError = true)]
             public static extern uint SetFilePointer(SafeFileHandle hFile, int cbDistanceToMove, IntPtr pDistanceToMoveHigh, MoveMethod fMoveMethod);
 
+        }
+
+    }
+
+    public class DriveImage : IDisposable, IDrive
+    {
+        private bool disposed;
+        private FileStream stream;
+
+        /// <summary>
+        /// File name
+        /// </summary>
+        public string Name { private set; get; }
+
+        /// <summary>
+        /// Path to the file on disk
+        /// </summary>
+        public string Path { private set; get; }
+
+        /// <summary>
+        /// Size of the file on disk
+        /// </summary>
+        public ulong Capacity { private set; get; }
+
+        /// <summary>
+        /// Whether the file stream is open
+        /// </summary>
+        public bool IsOpen { private set; get; }
+
+        internal DriveImage(string path)
+        {
+            //the check for if the file exists and that it is also a FATX image is done at the UI level
+            stream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+            var info = new FileInfo(path);
+            Name = info.Name;
+            Path = path;
+            Capacity = (ulong)info.Length;
+            IsOpen = true;
+            disposed = false;
+        }
+
+        ~DriveImage() { Dispose(); }
+
+        public void Dispose()
+        {
+            if (disposed) return;
+            stream.Close();
+            stream.Dispose();
+            IsOpen = false;
+            disposed = true;
+        }
+
+        /// <summary>
+        /// Whether device image is FATX formatted
+        /// </summary>
+        public bool IsFATX
+        {
+            get
+            {
+                //this is pre-checked at the UI level
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// True if the device image is a MU else false for HDD
+        /// </summary>
+        public bool IsMemoryCard
+        {
+            get
+            {
+                //assume memory card if drive image size is below 8GB
+                if (Capacity >= 0x1BA443700) return false;
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Number of accounts currently stored in the device image
+        /// </summary>
+        public int CurrentAccounts
+        {
+            get
+            {
+                if (disposed) return 0;
+                int slots = MaxAccounts;
+                if (slots == 0) return 0;
+                int count = 0;
+
+
+
+                return count;
+            }
+        }
+
+        /// <summary>
+        /// Maximum number of accounts that can be stored in the device image
+        /// </summary>
+        public int MaxAccounts
+        {
+            get
+            {
+                if (disposed) return 0;
+                if (IsMemoryCard) return 1; //MU 1 account slot
+                return 8; //HDD 8 account slots
+            }
+        }
+
+        /// <summary>
+        /// Friendly string containing the size of the device image
+        /// </summary>
+        public string FriendlyCapacity
+        {
+            get
+            {
+                if (disposed) return "";
+                var sizes = new string[] { "B", "KB", "MB", "GB", "TB" };
+                var temp = (double)Capacity;
+                int i = 0;
+                while (temp > 1024.0)
+                {
+                    temp /= 1024.0;
+                    i++;
+                }
+                return $"{Math.Round(temp, 2)} {sizes[i]}";
+            }
+        }
+
+        public bool ReadAccount(int index, out API.XOnline.ONLINE_USER_ACCOUNT_STRUCT account)
+        {
+            account = default(API.XOnline.ONLINE_USER_ACCOUNT_STRUCT);
+            int max = MaxAccounts;
+            if (max == 0 || (index > (max - 1))) return false;
+            //no need to seek or read/write on sector bounds with a file, we can go directly to the offset we want and read/write exactly what's needed
+            byte[] buffer = new byte[0x6C];
+            try
+            {
+                stream.Seek((0x50 + (index * 0x6C)), SeekOrigin.Begin);
+                if (stream.Read(buffer, 0, 0x6C) == 0x6C)
+                {
+                    account = buffer.Deserialize<API.XOnline.ONLINE_USER_ACCOUNT_STRUCT>();
+                    return API.XOnline.VerifyOnlineUserSignature(account);
+                }
+            }
+            catch { }
+            return false;
+        }
+
+        public bool WriteAccount(int index, API.XOnline.ONLINE_USER_ACCOUNT_STRUCT account)
+        {
+            int max = MaxAccounts;
+            if (max == 0 || (index > (max - 1))) return false;
+            if (!API.XOnline.SignOnlineUserSignature(ref account)) return false;
+            byte[] buffer = account.Serialize();
+            try
+            {
+                stream.Seek((0x50 + (index * 0x6C)), SeekOrigin.Begin);
+                stream.Write(buffer, 0, 0x6C);
+                stream.Flush();
+            }
+            catch { return false; }
+            return true;
+        }
+
+        public bool DeleteAccount(int index)
+        {
+            int max = MaxAccounts;
+            if (max == 0 || (index > (max - 1))) return false;
+
+            byte[] buffer = new byte[]
+            {
+                0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
+            };
+
+            try
+            {
+                stream.Seek((0x50 + (index * 0x6C)), SeekOrigin.Begin);
+                stream.Write(buffer, 0, 0x6C);
+                stream.Flush();
+            }
+            catch { return false; }
+            return true;
         }
 
     }

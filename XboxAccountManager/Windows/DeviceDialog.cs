@@ -9,7 +9,7 @@ namespace AccountManager
 {
     public partial class DeviceDialog : Form
     {
-        private List<Drive> loadedDrives;
+        private List<IDrive> loadedDrives;
 
         public API.XOnline.ONLINE_USER_ACCOUNT_STRUCT Account { set; get; }
 
@@ -139,7 +139,7 @@ namespace AccountManager
             }
         }
 
-        private List<Drive> ScanDrives()
+        private List<IDrive> ScanDrives()
         {
             //get drives from WMI (slow...)
             ManagementObjectCollection WMIObjects;
@@ -165,7 +165,7 @@ namespace AccountManager
             }
 
             //check if any potential drives are FATX 
-            var results = new List<Drive>();
+            var results = new List<IDrive>();
             foreach (var drive in sorted)
             {
                 var temp = new Drive((string)drive["Caption"], (string)drive["Name"], (ulong)drive["Size"]);

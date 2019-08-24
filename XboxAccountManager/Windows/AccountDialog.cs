@@ -7,12 +7,12 @@ namespace AccountManager
 {
     public partial class AccountDialog : Form
     {
-        private Drive currentDrive;
+        private IDrive currentDrive;
         private List<API.XOnline.ONLINE_USER_ACCOUNT_STRUCT> loadedAccounts;
 
         public API.XOnline.ONLINE_USER_ACCOUNT_STRUCT Account { set; get; }
 
-        public AccountDialog(ref Drive drive, bool saving)
+        public AccountDialog(ref IDrive drive, bool saving)
         {
             InitializeComponent();
             DialogResult = DialogResult.Cancel;

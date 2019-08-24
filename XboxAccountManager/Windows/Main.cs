@@ -149,8 +149,106 @@ namespace AccountManager
                 }
             };
 
+            openDeviceImageMenuItem.Click += (s, e) =>
+            {
+                using (var dialog = new OpenFileDialog())
+                {
+                    dialog.Title = "Open Device Image Backup";
+                    dialog.Filter = "All Files (*.*)|*.*";
+                    dialog.Multiselect = false;
+                    dialog.CheckFileExists = true;
+                    dialog.CheckPathExists = true;
+                    dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                    dialog.RestoreDirectory = true;
+                    if (dialog.ShowDialog(this) == DialogResult.OK)
+                    {
+                        var file = dialog.FileName;
+                        if (!CheckDeviceImageFile(file))
+                        {
+                            MessageBox.Show(this, "Selected file is not a valid Xbox memory card or harddrive image", "Invalid FATX Image", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                        API.XOnline.ONLINE_USER_ACCOUNT_STRUCT account;
+                        IDrive image = new DriveImage(file);
+                        using (var accountDialog = new AccountDialog(ref image, false))
+                        {
+                            if (accountDialog.ShowDialog(this) == DialogResult.OK)
+                            {
+                                account = accountDialog.Account;
+                                LoadAccountToUI(account);
+                            }
+                        }
+                        image.Dispose();
+                    }
+                }
+            };
+
+            saveDeviceImageMenuItem.Click += (s, e) =>
+            {
+                //check xuid
+                if (string.IsNullOrEmpty(textBox1.Text) || textBox1.Text.Length != 16 || !textBox1.Text.IsHex())
+                {
+                    MessageBox.Show(this, "XUID must be 8 bytes in length (16 hexadecimal characters)\n\nIt's safe to set the XUID to all zeroes", "Invalid XUID", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                //check gamertag
+                if (string.IsNullOrEmpty(textBox2.Text) || !textBox2.Text.IsASCII())
+                {
+                    MessageBox.Show(this, "Gamertag must be at least 1 character in length. Only ASCII characters are valid", "Invalid Gamertag", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                using (var dialog = new OpenFileDialog())
+                {
+                    dialog.Title = "Open Device Image Backup";
+                    dialog.Filter = "All Files (*.*)|*.*";
+                    dialog.Multiselect = false;
+                    dialog.CheckFileExists = true;
+                    dialog.CheckPathExists = true;
+                    dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                    dialog.RestoreDirectory = true;
+                    if (dialog.ShowDialog(this) == DialogResult.OK)
+                    {
+                        var file = dialog.FileName;
+                        if (!CheckDeviceImageFile(file))
+                        {
+                            MessageBox.Show(this, "Selected file is not a valid Xbox memory card or harddrive image", "Invalid FATX Image", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                        API.XOnline.ONLINE_USER_ACCOUNT_STRUCT account = UnloadAccountFromUI();
+                        IDrive image = new DriveImage(file);
+                        using (var accountDialog = new AccountDialog(ref image, true))
+                        {
+                            accountDialog.Account = account;
+                            accountDialog.ShowDialog(this);
+                        }
+                        image.Dispose();
+                    }
+                }
+            };
+
             Generate();
 
+        }
+
+        private bool CheckDeviceImageFile(string file)
+        {
+            bool result = false;
+            //check file path, that the file exists, and that the file is atleast 0x400 bytes in length (all we need for our reads/writes)
+            if (!string.IsNullOrEmpty(file) && File.Exists(file) & (new FileInfo(file)).Length >= 0x400)
+            {
+                //check for FATX magic
+                using (var stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    var buffer = new byte[4];
+                    if (stream.Read(buffer, 0, 4) == 4)
+                    {
+                        result = (BitConverter.ToUInt32(buffer, 0) == 0x58544146);
+                    }
+                }
+            }
+            return result;
         }
 
         private void Blank()
