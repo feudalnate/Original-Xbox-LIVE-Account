@@ -432,9 +432,22 @@ namespace AccountManager
                 int slots = MaxAccounts;
                 if (slots == 0) return 0;
                 int count = 0;
-
-
-
+                byte[] buffer = new byte[0x6C];
+                API.XOnline.ONLINE_USER_ACCOUNT_STRUCT account;
+                try
+                {
+                    for (int i = 0; i < slots; i++)
+                    {
+                        stream.Seek((0x50 + (i * 0x6C)), SeekOrigin.Begin);
+                        if (stream.Read(buffer, 0, 0x6C) == 0x6C)
+                        {
+                            account = buffer.Deserialize<API.XOnline.ONLINE_USER_ACCOUNT_STRUCT>();
+                            if (API.XOnline.VerifyOnlineUserSignature(account)) count++;
+                        }
+                        else return 0;
+                    }
+                }
+                catch { return 0; }
                 return count;
             }
         }
