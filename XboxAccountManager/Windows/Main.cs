@@ -379,17 +379,17 @@ namespace AccountManager
 
         private int PasscodeButtonValueToIndex(byte buttonValue)
         {
-            if (buttonValue > 0 && buttonValue <= 8) return buttonValue - 1;
-            if (buttonValue == 0xB) return 8;
-            if (buttonValue == 0xC) return 9;
+            if (buttonValue > 0 && buttonValue <= 6) return buttonValue - 1;
+            if (buttonValue == 9) return 6;
+            if (buttonValue == 10) return 7;
             return 0;
         }
 
         private byte IndexToPasscodeButtonValue(int index)
         {
-            if (index >= 0 && index <= 7) return (byte)(index + 1);
-            if (index == 8) return 0xB;
-            if (index == 9) return 0xC;
+            if (index >= 0 && index <= 5) return (byte)(index + 1);
+            if (index == 6) return 9;
+            if (index == 7) return 10;
             return 0;
         }
 

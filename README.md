@@ -61,13 +61,11 @@ You could potentially create an account that is completely null (all zeroes) and
 | D-Pad or Analog DOWN | 0x2 |
 | D-Pad or Analog LEFT | 0x3 |
 | D-Pad or Analog RIGHT | 0x4 |
-| A Button | 0x5 |
-| B Button | 0x6 |
-| X Button | 0x7 |
-| Y Button | 0x8 |
-| Left Trigger | 0xB |
-| Right Trigger | 0xC |
-
+| X Button | 0x5 |
+| Y Button | 0x6 |
+| Left Trigger | 0x9 |
+| Right Trigger | 0xA |
+> *A button, B button, and left analog stick are reserved during passcode prompts (right analog stick is still applicable)*
 
 #### Creating a Xbox LIVE account for the *original* Xbox
 

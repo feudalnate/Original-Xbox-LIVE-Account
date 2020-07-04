@@ -37,9 +37,11 @@
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openDeviceMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openDeviceImageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveDeviceMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveDeviceImageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
@@ -53,8 +55,6 @@
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.comboBox3 = new System.Windows.Forms.ComboBox();
             this.comboBox4 = new System.Windows.Forms.ComboBox();
-            this.openDeviceImageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveDeviceImageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -85,7 +85,7 @@
             this.generateMenuItem,
             this.blankMenuItem});
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.newToolStripMenuItem.Text = "New";
             // 
             // generateMenuItem
@@ -103,7 +103,7 @@
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(100, 6);
             // 
             // openToolStripMenuItem
             // 
@@ -112,20 +112,26 @@
             this.openDeviceMenuItem,
             this.openDeviceImageMenuItem});
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.openToolStripMenuItem.Text = "Open";
             // 
             // openFileMenuItem
             // 
             this.openFileMenuItem.Name = "openFileMenuItem";
-            this.openFileMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openFileMenuItem.Size = new System.Drawing.Size(151, 22);
             this.openFileMenuItem.Text = "File..";
             // 
             // openDeviceMenuItem
             // 
             this.openDeviceMenuItem.Name = "openDeviceMenuItem";
-            this.openDeviceMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openDeviceMenuItem.Size = new System.Drawing.Size(151, 22);
             this.openDeviceMenuItem.Text = "Device..";
+            // 
+            // openDeviceImageMenuItem
+            // 
+            this.openDeviceImageMenuItem.Name = "openDeviceImageMenuItem";
+            this.openDeviceImageMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.openDeviceImageMenuItem.Text = "Device Image..";
             // 
             // saveToolStripMenuItem
             // 
@@ -134,20 +140,26 @@
             this.saveDeviceMenuItem,
             this.saveDeviceImageMenuItem});
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.saveToolStripMenuItem.Text = "Save";
             // 
             // saveFileMenuItem
             // 
             this.saveFileMenuItem.Name = "saveFileMenuItem";
-            this.saveFileMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveFileMenuItem.Size = new System.Drawing.Size(151, 22);
             this.saveFileMenuItem.Text = "File..";
             // 
             // saveDeviceMenuItem
             // 
             this.saveDeviceMenuItem.Name = "saveDeviceMenuItem";
-            this.saveDeviceMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveDeviceMenuItem.Size = new System.Drawing.Size(151, 22);
             this.saveDeviceMenuItem.Text = "Device..";
+            // 
+            // saveDeviceImageMenuItem
+            // 
+            this.saveDeviceImageMenuItem.Name = "saveDeviceImageMenuItem";
+            this.saveDeviceImageMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.saveDeviceImageMenuItem.Text = "Device Image..";
             // 
             // label1
             // 
@@ -243,8 +255,6 @@
             "Down",
             "Left",
             "Right",
-            "A",
-            "B",
             "X",
             "Y",
             "LT",
@@ -265,8 +275,6 @@
             "Down",
             "Left",
             "Right",
-            "A",
-            "B",
             "X",
             "Y",
             "LT",
@@ -287,8 +295,6 @@
             "Down",
             "Left",
             "Right",
-            "A",
-            "B",
             "X",
             "Y",
             "LT",
@@ -309,8 +315,6 @@
             "Down",
             "Left",
             "Right",
-            "A",
-            "B",
             "X",
             "Y",
             "LT",
@@ -319,18 +323,6 @@
             this.comboBox4.Name = "comboBox4";
             this.comboBox4.Size = new System.Drawing.Size(55, 23);
             this.comboBox4.TabIndex = 8;
-            // 
-            // openDeviceImageMenuItem
-            // 
-            this.openDeviceImageMenuItem.Name = "openDeviceImageMenuItem";
-            this.openDeviceImageMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.openDeviceImageMenuItem.Text = "Device Image..";
-            // 
-            // saveDeviceImageMenuItem
-            // 
-            this.saveDeviceImageMenuItem.Name = "saveDeviceImageMenuItem";
-            this.saveDeviceImageMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.saveDeviceImageMenuItem.Text = "Device Image..";
             // 
             // Main
             // 
@@ -356,7 +348,7 @@
             this.MaximizeBox = false;
             this.Name = "Main";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Xbox Account Manager";
+            this.Text = "Xbox Account Manager (1.1)";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
